@@ -10,7 +10,9 @@ class Login extends React.Component {
           pwd:"",
           customer:{},
           truckowner:{},
-         loginerr:"",
+          loginerr:"",
+          uidError: "",
+          pwdError: "",
     }  
      
   }
@@ -55,46 +57,63 @@ fetch("http://localhost:8080/Login",requestOptions)
       {this.setState({truckowner:json});
       localStorage.setItem("loggedinuser",JSON.stringify(this.state.customer));
         mystore.dispatch({type:"LOGGEDIN"});
-        this.props.history.push("/truckownerhome");}
-        
-       
-        
+        this.props.history.push("/truckownerhome");}  
     }
     else
     
       {  this.setState({loginerr:"wrongID/PWD"});}
-  
-
 });
 }
 
 
+valid(){
+        if(this.state.uid.includes("@") && this.state.pwd.length < 5) {
+            this.setState(
+                {uidError:"Invaid Uid", pwdError:"Required More Then 5"}
+            )
+        }
+        else if(this.state.uid.includes("@")) {
+            this.setState(
+                {uidError:"Invalid Uid"}
+            )
+        }
+        else if(this.state.pwd.length < 5) {
+            this.setState(
+                {pwdError:"Required More Than 5"}
+            )
+        }
+        else {
+            return true
+        }
+    }
 
-
-
-
+    submitInfo() {
+        this.setState(
+            {uidError: "", pwdError: ""}
+        )
+        if(this.valid()) {
+            alert("form has been submited")
+        }
+    }
  
 render()
 {
 return(
    <div>
-<h1> Login Page</h1>
-  <form>
-   Enter Username : <input type="text" name="uid" onChange={this.handleChange}/><br/>
-    Enter Password : <input type="password" name="pwd" onChange={this.handleChange}/><br/>
+    <h1> Login Page</h1>
+    <form>
+    Enter Username : <input type="text" name="uid" onChange={this.handleChange}/>
+    <br/>
+        <p style={{color:"red", fontSize:"14px"}}> {this.state.uidError} </p>
+    Enter Password : <input type="password" name="pwd" onChange={this.handleChange}/>
+    <br/>
+        <p style={{color:"red", fontSize:"14px"}}> {this.state.pwdError} </p>
     <input type="button" onClick={this.submitInfo} value="LOGIN"/>
-   </form>
-   <br/>
-   <p>{this.state.loginerr}</p>
-
-
+    </form>
+    <br/>
+    <p>{this.state.loginerr}</p>
 
    </div>
-
-
-
-
-
 );
 
 }
